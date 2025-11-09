@@ -38,22 +38,13 @@ services:
     ports:
       - "7077:7077"   # Spark master port
       - "8080:8080"   # Spark web UI
+      - "10000:10000" # ThriftServer
     volumes:
       - ./spark/ivy2:/home/spark/.ivy2
       - ./src:/opt/spark-apps
       - ./data:/data
     depends_on:
       - kafka
-    networks:
-      - lakehouse_net
-  grafana:
-    # Use grafana latest for now; pin to a specific stable tag if you want reproducible builds.
-    image: grafana/grafana:latest
-    container_name: grafana
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./grafana:/var/lib/grafana
     networks:
       - lakehouse_net
 networks:

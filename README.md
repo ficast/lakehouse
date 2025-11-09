@@ -45,8 +45,8 @@ Esses dados são ingeridos, processados e disponibilizados em camadas para anál
 | Camada | Tipo | Descrição |
 |---------|------|------------|
 | **Bronze** | Streaming | Dados crus, ingeridos do Kafka |
-| **Silver** | Batch (1 min)** | Dados limpos e enriquecidos |
-| **Gold** | Batch (5 min)** | Agregações e KPIs por máquina/hora |
+| **Silver** | Batch (24 horas)** | Dados limpos e enriquecidos |
+| **Gold** | Batch (24 horas)** | Agregações e KPIs por máquina/hora |
 
 > ⚙️ Frequências de atualização configuráveis — ideais para demonstração.
 
@@ -117,12 +117,17 @@ docker exec -it spark bash -lc "spark-submit --conf 'spark.sql.extensions=io.del
 
 ---
 
-## (TODO) 🧮 Processamento – Camada Silver
+## 🧮 Processamento – Camada Silver
 
 Job batch executado a cada minuto (pode ser agendado via cron):
 
 ```bash
-docker exec spark spark-submit /opt/spark-apps/jobs/silver/transform_machine_events.py
+docker exec -it spark bash -lc "\
+  spark-submit \
+    --conf 'spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension' \
+    --conf 'spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog' \
+    /opt/spark-apps/jobs/silver/transform_machine_events.py"
+
 ```
 
 Responsável por:
@@ -132,12 +137,17 @@ Responsável por:
 
 ---
 
-## (TODO) 📊 Agregação – Camada Gold
+## 📊 Agregação – Camada Gold
 
 Job executado a cada 5 minutos:
 
 ```bash
-docker exec spark spark-submit /opt/spark-apps/jobs/gold/aggregate_machine_kpis.py
+docker exec -it spark bash -lc "\
+  spark-submit \
+    --conf 'spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension' \
+    --conf 'spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog' \
+    /opt/spark-apps/jobs/gold/aggregate_machine_kpis.py"
+
 ```
 
 Calcula KPIs:
@@ -147,16 +157,8 @@ Calcula KPIs:
 
 ---
 
-## (TODO) 📈 Visualização no Grafana
+## (TODO) 📈 Visualização
 
-O Grafana se conecta à camada **Gold** (ou Silver) para exibir dashboards em tempo quase real.
-
-Acesse:
-```text
-http://localhost:3000
-```
-
-> Login padrão: **admin / admin**
 
 ---
 
@@ -167,7 +169,7 @@ http://localhost:3000
 ✅ Arquitetura Medallion (Bronze/Silver/Gold)  
 ✅ Persistência transacional com Delta Lake  
 ✅ Job orchestration (cron/compose)  
-✅ Visualização de métricas industriais  
+✅ Visualização de métricas industriais
 
 ---
 

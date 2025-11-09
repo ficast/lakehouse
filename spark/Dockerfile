@@ -38,4 +38,5 @@ RUN set -eux; \
 		curl -fL -o delta-storage-2.3.0.jar \
 			https://repo1.maven.org/maven2/io/delta/delta-storage/2.3.0/delta-storage-2.3.0.jar; \
 		chown -R spark:spark /opt/spark/jars
+		
 USER spark
