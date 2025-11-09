@@ -117,7 +117,7 @@ docker exec -it spark bash -lc "spark-submit --conf 'spark.sql.extensions=io.del
 
 ---
 
-## 🧮 Processamento – Camada Silver
+## (TODO) 🧮 Processamento – Camada Silver
 
 Job batch executado a cada minuto (pode ser agendado via cron):
 
@@ -132,7 +132,7 @@ Responsável por:
 
 ---
 
-## 📊 Agregação – Camada Gold
+## (TODO) 📊 Agregação – Camada Gold
 
 Job executado a cada 5 minutos:
 
@@ -147,7 +147,7 @@ Calcula KPIs:
 
 ---
 
-## 📈 Visualização no Grafana
+## (TODO) 📈 Visualização no Grafana
 
 O Grafana se conecta à camada **Gold** (ou Silver) para exibir dashboards em tempo quase real.
 
