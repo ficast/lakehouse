@@ -1,0 +1,7 @@
+local:
+  base_path: "./data"
+  kafka_bootstrap: "kafka:9092"
+
+databricks:
+  base_path: "/mnt/datalake"
+  kafka_bootstrap: "databricks-kafka:9092"

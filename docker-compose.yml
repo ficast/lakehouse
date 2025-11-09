@@ -1,0 +1,61 @@
+services:
+  kafka:
+    build: ./kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_ENABLE_KRAFT: "yes"
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@localhost:9093"
+      KAFKA_LISTENERS: "INTERNAL://0.0.0.0:29092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
+      KAFKA_ADVERTISED_LISTENERS: "INTERNAL://kafka:29092,EXTERNAL://localhost:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "INTERNAL"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+      CLUSTER_ID: "vPFeQLlIRJ2s_y8jUuT1Zw"
+    volumes:
+      - ./kafka/data:/var/lib/kafka/data
+      - ./kafka/create-topics.sh:/etc/confluent/docker/create-topics.sh
+
+    networks:
+      - lakehouse_net
+
+  spark:
+    build:
+      context: ./spark
+      dockerfile: Dockerfile
+    container_name: spark
+    command: ["/bin/bash", "-c", "/opt/spark/sbin/start-master.sh && tail -f /dev/null"]
+    environment:
+      - SPARK_ENV=${SPARK_ENV}
+      - DELTA_PATH=${DELTA_PATH}
+      - KAFKA_BOOTSTRAP=${KAFKA_BOOTSTRAP_SPARK}
+    ports:
+      - "7077:7077"   # Spark master port
+      - "8080:8080"   # Spark web UI
+    volumes:
+      - ./spark/ivy2:/home/spark/.ivy2
+      - ./src:/opt/spark-apps
+      - ./data:/data
+    depends_on:
+      - kafka
+    networks:
+      - lakehouse_net
+  grafana:
+    # Use grafana latest for now; pin to a specific stable tag if you want reproducible builds.
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana:/var/lib/grafana
+    networks:
+      - lakehouse_net
+networks:
+  lakehouse_net:
+    driver: bridge

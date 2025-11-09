@@ -1,0 +1,22 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+.env
+venv/
+.DS_Store
+
+/data/*
+
+/kafka/__*
+/kafka/data/
+
+
+/grafana/*
