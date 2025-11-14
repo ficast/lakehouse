@@ -22,3 +22,6 @@ for t in machine_events; do
 done
 
 echo "🏁 Kafka initialization complete!"
+
+# Ensure script is LF-terminated if someone copied it from Windows
+exit 0

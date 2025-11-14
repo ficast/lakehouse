@@ -7,6 +7,9 @@ USER root
 COPY create-topics.sh /usr/local/bin/create-topics.sh
 RUN chmod +x /usr/local/bin/create-topics.sh
 
+# normalize line endings in the copied script in case host file had CRLF
+RUN sed -i 's/\r$//' /usr/local/bin/create-topics.sh || true
+
 # Volta para o usuário padrão usado pela imagem (appuser)
 USER appuser
 
